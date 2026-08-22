@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minutes of Meeting — {{ data.meeting_title }}</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #2c3e50; }
+  .container { max-width: 720px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .header { background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: white; padding: 28px 32px; }
+  .header h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+  .header .meta { margin-top: 8px; font-size: 13px; opacity: 0.85; }
+  .badge { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 4px; padding: 2px 8px; font-size: 11px; margin-left: 8px; }
+  .section { padding: 24px 32px; border-bottom: 1px solid #edf2f7; }
+  .section:last-child { border-bottom: none; }
+  .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #1a237e; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+  .summary-text { font-size: 14px; line-height: 1.7; color: #4a5568; }
+  .decisions-list, .risks-list { list-style: none; padding: 0; margin: 0; }
+  .decisions-list li, .risks-list li { padding: 8px 0 8px 20px; font-size: 14px; border-bottom: 1px solid #f7fafc; position: relative; }
+  .decisions-list li::before { content: '✓'; position: absolute; left: 0; color: #38a169; font-weight: bold; }
+  .risks-list li::before { content: '⚠'; position: absolute; left: 0; }
+  .action-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .action-table th { background: #f7f8ff; color: #1a237e; padding: 10px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #c5cae9; }
+  .action-table td { padding: 10px 12px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
+  .action-table tr:hover td { background: #fafbff; }
+  .priority-high { display: inline-block; background: #fed7d7; color: #c53030; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .priority-medium { display: inline-block; background: #feebc8; color: #c05621; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .priority-low { display: inline-block; background: #c6f6d5; color: #276749; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .attendee-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { background: #e8eaf6; color: #3949ab; border-radius: 12px; padding: 4px 12px; font-size: 12px; font-weight: 500; }
+  .next-steps { font-size: 14px; line-height: 1.7; color: #4a5568; }
+  .footer { background: #f7f8ff; padding: 16px 32px; text-align: center; font-size: 11px; color: #a0aec0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>📋 Minutes of Meeting</h1>
+    <div class="meta">
+      <strong>{{ data.meeting_title }}</strong>
+      <span class="badge">{{ data.date }}</span>
+      {% if data.action_items | length > 0 %}
+      <span class="badge">{{ data.action_items | length }} Action Items</span>
+      {% endif %}
+    </div>
+    <div class="meta" style="margin-top:6px;">
+      <em>Context: {{ data.meeting_context }}</em>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Executive Summary</div>
+    <p class="summary-text">{{ data.executive_summary }}</p>
+  </div>
+
+  {% if data.attendees_mentioned %}
+  <div class="section">
+    <div class="section-title">Attendees Mentioned</div>
+    <div class="attendee-chips">
+      {% for name in data.attendees_mentioned %}
+      <span class="chip">👤 {{ name }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if data.key_decisions %}
+  <div class="section">
+    <div class="section-title">Key Decisions</div>
+    <ul class="decisions-list">
+      {% for decision in data.key_decisions %}
+      <li>{{ decision }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if data.action_items %}
+  <div class="section">
+    <div class="section-title">Action Items</div>
+    <table class="action-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Task</th><th>Assignee</th><th>Deadline</th><th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in data.action_items %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ item.task }}</td>
+          <td><strong>{{ item.assignee }}</strong></td>
+          <td>{{ item.deadline }}</td>
+          <td>
+            {% if item.priority == 'High' %}<span class="priority-high">🔴 High</span>
+            {% elif item.priority == 'Medium' %}<span class="priority-medium">🟡 Medium</span>
+            {% else %}<span class="priority-low">🟢 Low</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if data.risks_and_blockers %}
+  <div class="section">
+    <div class="section-title">Risks &amp; Blockers</div>
+    <ul class="risks-list">
+      {% for risk in data.risks_and_blockers %}
+      <li>{{ risk }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if data.next_steps %}
+  <div class="section">
+    <div class="section-title">Next Steps</div>
+    <p class="next-steps">{{ data.next_steps }}</p>
+    {% if data.next_meeting_suggestion != 'TBD' %}
+    <p style="font-size:13px; color:#718096;">
+      📅 <strong>Next Meeting:</strong> {{ data.next_meeting_suggestion }}
+    </p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="footer">
+    Auto-generated by <strong>MOM Generator</strong> &bull;
+    Powered by Sarvam AI + Gemini &bull; {{ data.date }}<br>
+    <em>This document is auto-generated. Please verify action items with your team.</em>
+  </div>
+
+</div>
+</body>
+</html>
