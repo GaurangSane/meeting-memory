@@ -3,22 +3,19 @@ const nextConfig = {
   output: "standalone",        // needed for the multi-stage Docker build
   reactStrictMode: true,
 
-  // Proxy /api/* calls to the FastAPI backend during local development.
-  // NOTE: WebSocket (/ws/*) rewrites are intentionally absent — Next.js
-  // rewrites do not support the ws:// protocol and will fail the production
-  // build with "destination does not start with '/', 'http://', or 'https://'".
-  // In production, nginx handles /ws/ proxying directly (see nginx.conf).
-  // For local development, set NEXT_PUBLIC_WS_URL in AudioRecorder.tsx to
-  // point directly at the backend (e.g. ws://localhost:8000).
+  // Proxy same-origin /api/* requests to the FastAPI backend.
+  // BACKEND_URL is server-side only so browser API requests stay on the
+  // frontend origin, allowing HttpOnly auth cookies to work with middleware.
+  // WebSockets connect directly to Railway via NEXT_PUBLIC_WS_URL.
   async rewrites() {
-    if (!process.env.NEXT_PUBLIC_API_URL) {
+    if (!process.env.BACKEND_URL) {
       return [];
     }
 
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
+        destination: `${process.env.BACKEND_URL}/api/:path*`,
       },
     ];
   },
