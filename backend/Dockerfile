@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Default: FastAPI (overridden per-service in docker-compose.yml)
-CMD ["/bin/sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"]
+CMD ["/bin/sh", "-c", "exec /usr/local/bin/uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"]
