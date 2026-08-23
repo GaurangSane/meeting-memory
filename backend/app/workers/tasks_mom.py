@@ -50,7 +50,8 @@ from app.services.gemini_service import generate_mom
 from app.services.rag_service import build_rag_prompt_block, retrieve_historical_context
 from app.workers.celery_app import celery_app
 from app.workers.tasks_embeddings import embed_meeting_task
-from app.workers.tasks_notifications import send_email_task, send_whatsapp_task
+from app.workers.tasks_notifications import send_whatsapp_task
+from app.workers.tasks_resend_email import send_email_task
 
 logger = logging.getLogger(__name__)
 
