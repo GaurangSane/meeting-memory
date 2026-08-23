@@ -37,10 +37,15 @@ class Settings(BaseSettings):
     GEMINI_EMBEDDING_MODEL: str = "models/gemini-embedding-001"
 
     # ── Email ─────────────────────────────────────────────────────────
+    # Existing SMTP settings are kept for compatibility with the current
+    # deployment. Production MOM delivery now uses Resend over HTTPS.
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: str
     SMTP_PASSWORD: str
+    RESEND_API_KEY: str | None = None
+    RESEND_FROM_EMAIL: str | None = None
+    RESEND_FROM_NAME: str = "Meeting Memory"
 
     # ── Twilio ────────────────────────────────────────────────────────
     TWILIO_ACCOUNT_SID: str
