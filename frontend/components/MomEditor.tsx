@@ -130,6 +130,14 @@ export function MomEditor({ meetingId, initialMom }: Props) {
   // This matches the critical submit logic in PLAN_WEB_SAAS.md §10.1 exactly.
 
   const handleSave = useCallback(async () => {
+    // A generated MOM is persisted by the backend before this editor is shown.
+    // Keep Save clickable so it does not look broken, but avoid an unnecessary
+    // PATCH when the user has not changed anything.
+    if (!isDirty) {
+      toast.success('MOM is already saved.')
+      return
+    }
+
     setIsSaving(true)
     try {
       const res = await apiClient.patch(`/api/v1/meetings/${meetingId}/mom`, {
@@ -158,7 +166,7 @@ export function MomEditor({ meetingId, initialMom }: Props) {
     } finally {
       setIsSaving(false)
     }
-  }, [meetingId, mom])
+  }, [meetingId, mom, isDirty])
 
   // ── Cancel handler ─────────────────────────────────────────────────────────
 
@@ -202,7 +210,7 @@ export function MomEditor({ meetingId, initialMom }: Props) {
             id="mom-save-btn"
             onClick={handleSave}
             className="btn-primary"
-            disabled={!isDirty || isSaving}
+            disabled={isSaving}
           >
             {isSaving ? (
               <>
