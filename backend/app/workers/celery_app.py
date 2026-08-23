@@ -17,10 +17,12 @@ celery_app = Celery(
         "app.workers.tasks_mom",
         "app.workers.tasks_embeddings",
         "app.workers.tasks_notifications",
+        "app.workers.tasks_resend_email",
     ],
 )
 celery_app.conf.task_routes = {
     "app.workers.tasks_mom.*":           {"queue": "mom_generation"},
     "app.workers.tasks_embeddings.*":    {"queue": "embeddings"},
     "app.workers.tasks_notifications.*": {"queue": "notifications"},
+    "app.workers.tasks_resend_email.*":  {"queue": "notifications"},
 }
